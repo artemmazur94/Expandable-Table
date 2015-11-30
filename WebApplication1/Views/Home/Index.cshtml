@@ -1,0 +1,87 @@
+﻿@using WebApplication1.Models
+@model List<WebApplication1.Models.SomeModel>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var globalData = new Array();
+        
+
+        setInterval(function() {
+            var table = $('#mytable')[0];
+            var row = table.insertRow(table.end);
+
+            row.className = "myrow";
+
+            row.style.padding = "15 px";
+            
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+
+            row.onclick = function () {
+                var cur = parseInt(this.cells[2].innerHTML);
+                cur = cur + 1;
+                this.cells[2].innerHTML = cur;
+
+            };
+
+            cell1.style.backgroundColor = "lightskyblue";
+            cell2.style.backgroundColor = "lightgreen";
+            cell3.style.backgroundColor = "lightcoral";
+
+            cell1.style.padding = "10px";
+            cell2.style.padding = "10px";
+            cell3.style.padding = "10px";
+
+            var dt = new Date();
+
+            cell1.innerHTML = Math.round(Math.random() * 100) * 3;
+            cell2.innerHTML = dt.getDate() + "."
+                + (dt.getMonth() + 1) + "."
+                + dt.getFullYear() + " "
+                + dt.getHours() + ":"
+                + dt.getMinutes() + ":"
+                + dt.getSeconds();
+            cell3.innerHTML = 0;
+        }, 2000);
+
+        $("#postButton").on("click", function() {
+            var table = $('#mytable')[0];
+            for (var i = 0; i < table.rows.length; i++) {
+                var row = table.rows[i];
+                globalData[i] = new Array();
+                for (var j = 0; j < row.cells.length; j++) {
+                    globalData[i][j] = row.cells[j].innerHTML;
+                }
+            }
+
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("SaveInDB")',
+                data: { myTable: globalData },
+                success: function(data) {
+                    alert(data.Message);
+                }
+            });
+        });
+
+    });
+
+
+
+    
+</script>
+
+
+<div class="row">
+   <button id="postButton" type="submit">Save data in database</button>
+
+    <table id="mytable">
+    </table>
+</div>
